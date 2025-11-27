@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PDF Compare Tool</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 30px; }
+
+        .box {
+            background: #f1f1f1;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+        }
+
+        .pdf1-line {
+            background: #ffe6e6;
+            border-left: 4px solid red;
+            padding: 8px;
+            margin-bottom: 6px;
+        }
+
+        .pdf2-line {
+            background: #e6ffe6;
+            border-left: 4px solid green;
+            padding: 8px;
+            margin-bottom: 6px;
+        }
+
+        .diff-block {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 18px;
+        }
+
+        .toggle-btn {
+            background: #007bff;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 15px;
+        }
+
+        .toggle-btn:hover {
+            background: #0056b3;
+        }
+
+        .content-box {
+            display: none;
+            margin-top: 12px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>PDF Text Comparison Tool</h2>
+
+<div class="box">
+    <form method="POST" enctype="multipart/form-data">
+        <label>PDF 1:</label><br>
+        <input type="file" name="pdf1" required><br><br>
+
+        <label>PDF 2:</label><br>
+        <input type="file" name="pdf2" required><br><br>
+
+        <button type="submit">Compare PDFs</button>
+    </form>
+</div>
+
+{% if output %}
+
+    <button class="toggle-btn" onclick="toggleBox('pdf1only')">
+        Lines present only in PDF 1
+    </button>
+    <div id="pdf1only" class="content-box">
+        {% for line in output.only_pdf1 %}
+            <div class="pdf1-line">{{ line }}</div>
+        {% endfor %}
+    </div>
+
+    <button class="toggle-btn" onclick="toggleBox('pdf2only')">
+        Lines present only in PDF 2
+    </button>
+    <div id="pdf2only" class="content-box">
+        {% for line in output.only_pdf2 %}
+            <div class="pdf2-line">{{ line }}</div>
+        {% endfor %}
+    </div>
+
+    <button class="toggle-btn" onclick="toggleBox('diffs')">
+        Lines present in both PDFs but with different text
+    </button>
+    <div id="diffs" class="content-box">
+        {% for pair in output.different %}
+        <div class="diff-block">
+            <div class="pdf1-line"><strong>PDF1:</strong> {{ pair[0] }}</div>
+            <div class="pdf2-line"><strong>PDF2:</strong> {{ pair[1] }}</div>
+        </div>
+        {% endfor %}
+    </div>
+
+{% endif %}
+
+<script>
+function toggleBox(id) {
+    let box = document.getElementById(id);
+    box.style.display = (box.style.display === "block") ? "none" : "block";
+}
+</script>
+
+</body>
+</html>
